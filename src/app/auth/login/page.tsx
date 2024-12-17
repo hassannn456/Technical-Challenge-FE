@@ -18,7 +18,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import loadProto from "../../utils/protoLoader";
 
 interface FormData {
   email: string;
@@ -29,6 +28,7 @@ interface UserData {
   role: "customer" | "merchant" | "admin";
   [key: string]: any;
 }
+
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -37,17 +37,6 @@ const Login: React.FC = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
-  // const [LoginRequest, setLoginRequest] = useState<any>(null);
-  // const [LoginResponse, setLoginResponse] = useState<any>(null);
-
-  // React.useEffect(() => {
-  //   const load = async () => {
-  //     const { LoginRequest, LoginResponse } = await loadProto();
-  //     setLoginRequest(LoginRequest);
-  //     setLoginResponse(LoginResponse);
-  //   };
-  //   load();
-  // }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,41 +48,12 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // if (!LoginRequest) {
-    //   toast.error("Failed to load protobuf.");
-    //   return;
-    // }
-
-    // const message = LoginRequest.create({
-    //   email: formData.email,
-    //   password: formData.password,
-    // });
-
-    // const buffer = LoginRequest.encode(message).finish();
-
     try {
-      // const response = await axios.post(
-      //   `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-      //   buffer,
-      //   {
-      //     withCredentials: true,
-      //     headers: {
-      //       "Content-Type": "application/octet-stream", // Send protobuf as binary
-      //     },
-      //   }
-      // );
-
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         formData,
         { withCredentials: true }
       );
-
-      // const loginResponse = LoginResponse.decode(new Uint8Array(response.data));
-      // setUserData(loginResponse.user);
-      // localStorage.setItem("authToken", loginResponse.token);
-      // localStorage.setItem("userData", JSON.stringify(loginResponse.user));
 
       const authToken = response.data.token;
       const user: UserData = response.data.user;
@@ -132,10 +92,25 @@ const Login: React.FC = () => {
   };
 
   const handleDeclineCookies = () => {
-    Cookies.set("cookiesAccepted", "false", { expires: 365 });
-    setOpenModal(false);
-    toast.info("Cookies declined.");
-    router.push("/");
+    if (userData) {
+      Cookies.set("cookiesAccepted", "false", { expires: 365 });
+      setOpenModal(false);
+      toast.info("Cookies declined.");
+
+      switch (userData.role) {
+        case "customer":
+          router.push("/dashboard/customer");
+          break;
+        case "merchant":
+          router.push("/dashboard/merchant");
+          break;
+        case "admin":
+          router.push("/dashboard/admin");
+          break;
+        default:
+          router.push("/");
+      }
+    }
   };
 
   return (

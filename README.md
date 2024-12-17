@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend Project (Next.js)
 
-## Getting Started
+This project is a **Frontend for an E-Commerce platform** built with **Next.js**. It includes user authentication (signup and login) and separate dashboards for customers and merchants.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Signup & Login**: Allows users to create accounts and authenticate themselves.
+- **Customer Dashboard**: Customers can view and update their profile details.
+- **Merchant Dashboard**: Merchants can add and manage their stores.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Setup Instructions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Install Dependencies**  
+   Run the following command to install the required `node_modules`:
 
-## Learn More
+   ```bash
+   npm i --force
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Start Development Server**  
+   Start the project in development mode:
+   ```bash
+   npm run dev
+   ```
+3. **Environment Variables**  
+   Make sure to define the backend URL in your .env file by adding the following line:
+   ```bash
+   NEXT_PUBLIC_API_URL=<backend-url>
+   ```
+   Replace <backend-url> with your backend's URL.
+4. **Build the Project (Optional)**  
+   If you want to build the project for production, use the following command:
+   ```bash
+   npm run build
+   ```
+5. **Start the Production Server (Optional)**  
+   After building, you can start the server in production mode with:
+   ```bash
+   npm run start
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## User Logic and Signup Process
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Signup Flow**:
 
-## Deploy on Vercel
+1. **Fields in Signup Form**: The signup process involves the following fields:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - **Email**: Used as a unique identifier for the user.
+   - **Password**: User's chosen password (hashed on the backend).
+   - **First Name**: User's first name.
+   - **Last Name**: User's last name.
+   - **Role**: Defines the user’s role (either `customer` or `merchant`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   The role field helps determine which dashboard the user will have access to after they log in.
+
+### **Login Flow**:
+
+- The login form includes **Email** and **Password** fields.
+- Upon successful login, the backend returns a JWT that must be stored for maintaining the user's session.
+- The user is redirected to their respective dashboard based on their role (Customer or Merchant).
+
+### **Admin Login (No Signup from Frontend)**:
+
+- **Admin Credentials**:
+
+  - **Email**: `hassanchaudhary@gmail.com`
+  - **Password**: `123456`
+
+  The admin login cannot be created from the frontend. The admin account is pre-configured with the credentials provided above and is used to access an administrative dashboard.
+
+  - **Admin Role**: This role is different from `customer` or `merchant` and should be used to access special admin features.
+  - **Important**: Admin users do not go through the signup process via the frontend. The admin account is manually created in the backend.
+
+### **Role-Based Access Control**:
+
+- **Customer Dashboard**: Accessible to users with the role `customer`.
+- **Merchant Dashboard**: Accessible to users with the role `merchant`, where they can manage stores.
+
+---
+
+## Pages and Routes
+
+- **`/auth/login`**: The login page where users can log in using their email and password.
+- **`/auth/register`**: The registration page for new users to sign up (with fields for email, password, first name, last name, and role).
+- **`/dashboard/admin`**: The admin dashboard, which can only be accessed by users with the `admin` role (using pre-configured credentials).
+- **`/dashboard/merchant`**: The merchant dashboard, where users with the `merchant` role can manage stores.
+- **`/dashboard/customer`**: The customer dashboard, where users with the `customer` role can view their profile and other customer-specific information.
+
+---
+
+## Project Structure
+
+- **Pages**: Contains the page components for routing (e.g., `signup`, `login`, `dashboard`).
+- **Components**: Contains reusable components (e.g., buttons, forms).
+- **Styles**: Contains custom CSS and styling related to the project.
+- **Utils**: Contains utility functions like API calls or authentication helpers.

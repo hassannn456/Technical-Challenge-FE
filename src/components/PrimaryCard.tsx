@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -26,6 +26,13 @@ interface StylishCardProps {
   last_name: string;
   role?: string;
   description?: string;
+  refreshData: () => void;
+  onUpdateUser?: (updatedUser: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  }) => void;
 }
 
 const StylishCard: React.FC<StylishCardProps> = ({
@@ -34,8 +41,19 @@ const StylishCard: React.FC<StylishCardProps> = ({
   last_name,
   role,
   description,
+  refreshData,
+  onUpdateUser,
 }) => {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    console.log("submit -- ", id,
+      first_name,
+      last_name,
+      role,
+      description, refreshData, "-- ", onUpdateUser);
+  }, [])
+
   const [formData, setFormData] = useState({
     firstName: first_name || "",
     lastName: last_name || "",
@@ -70,20 +88,17 @@ const StylishCard: React.FC<StylishCardProps> = ({
     try {
       if (role !== undefined) {
         const updatedUserData = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          role: formData.role,
+          id,
+          first_name: formData.firstName || first_name,
+          last_name: formData.lastName || last_name,
+          role: formData.role || role,
         };
 
-        setFormData({
-          firstName: updatedUserData.firstName,
-          lastName: updatedUserData.lastName,
-          role: updatedUserData.role,
-          storeDescription: formData.storeDescription,
-          storeName: formData.storeName,
-        });
-
-        console.log("User updated locally", updatedUserData);
+        if (onUpdateUser) {
+          onUpdateUser(updatedUserData);
+        } else {
+          console.error("onUpdateUser callback not provided!");
+        }
       } else {
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/admin/stores/${id}`;
         const payload = {
@@ -96,10 +111,9 @@ const StylishCard: React.FC<StylishCardProps> = ({
             "Content-Type": "application/json",
           },
         });
-
+        refreshData();
         console.log("Store updated successfully", response.data);
       }
-
       handleClose();
     } catch (err: any) {
       setError(

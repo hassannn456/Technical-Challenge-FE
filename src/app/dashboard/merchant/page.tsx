@@ -63,6 +63,10 @@ const AdminDashboard: React.FC = () => {
         fetchStores();
     }, []);
 
+    const refreshData = async (): Promise<void> => {
+        fetchStores();
+    };
+
     const handleAddStore = async () => {
         if (!newStoreName || !newStoreDescription) {
             setError("Both store name and description are required.");
@@ -119,23 +123,27 @@ const AdminDashboard: React.FC = () => {
         try {
             setLoading(true);
 
+
+
             const updatedStore = {
                 name: editStoreName,
                 description: editStoreDescription,
                 active: true,
             };
 
-            await axios.patch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/merchants/stores/${storeToEdit.id}`,
-                updatedStore,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
 
-            await fetchStores();
+            console.log('updatedStore', updatedStore)
+            // await axios.patch(
+            //     `${process.env.NEXT_PUBLIC_API_URL}/api/merchants/stores/${storeToEdit.id}`,
+            //     updatedStore,
+            //     {
+            //         headers: {
+            //             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            //         },
+            //     }
+            // );
+
+            refreshData();
             setSuccessMessage("Store updated successfully!");
             setLoading(false);
             handleCloseEditModal();
@@ -209,7 +217,7 @@ const AdminDashboard: React.FC = () => {
                             boxShadow: activeTab === "users" ? 3 : 1,
                         }}
                     >
-                        Add New Stores
+                        Manage Users
                     </Button>
                     <Button
                         variant={activeTab === "merchants" ? "contained" : "outlined"}
@@ -248,10 +256,11 @@ const AdminDashboard: React.FC = () => {
                     </Box>
                 </Box>
 
+                {/* Content Area */}
                 <Box
                     sx={{
                         width: { xs: "100%", md: "80%" },
-                        ml: { md: "25%" },
+                        ml: { md: "22%" },
                     }}
                 >
                     {loading ? (
@@ -272,9 +281,9 @@ const AdminDashboard: React.FC = () => {
                                 {activeTab === "users" && (
                                     <Grid
                                         container
-                                        justifyContent="center"
-                                        alignItems="center"
-                                        sx={{ minHeight: "100vh" }}
+                                        justifyContent="center" // Centers horizontally
+                                        alignItems="center" // Centers vertically
+                                        sx={{ minHeight: "100vh" }} // Ensures the grid takes the full height of the viewport
                                     >
                                         <Grid item xs={12} md={6}>
                                             <Box
@@ -370,7 +379,15 @@ const AdminDashboard: React.FC = () => {
                                             </Typography>
                                         </Box>
 
-                                        <Stack direction="row" flexWrap="wrap">
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                flexWrap: "wrap",
+                                                gap: "15px",
+                                                mb: "30px",
+                                            }}
+                                        >
                                             {stores.map((store) => (
                                                 <Box key={store.id}>
                                                     <PrimaryCard
@@ -379,10 +396,11 @@ const AdminDashboard: React.FC = () => {
                                                         first_name={store.name}
                                                         description={store.description}
                                                         role={undefined}
+                                                        refreshData={refreshData}
                                                     />
                                                 </Box>
                                             ))}
-                                        </Stack>
+                                        </Box>
                                     </>
                                 )}
                             </>

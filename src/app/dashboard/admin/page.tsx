@@ -45,6 +45,23 @@ const AdminDashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  const refreshData = async (): Promise<void> => {
+    fetchData();
+  };
+
+  const updateUserInState = (updatedUser: { id: string; firstName: string; lastName: string; role: string }) => {
+    console.log('updatedUser', updatedUser.id)
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === updatedUser.id
+          ? { ...user, ...updatedUser }
+          : user
+      )
+    );
+  };
+
+  console.log('users', users)
+
   const fetchData = async (): Promise<void> => {
     try {
       setLoading(true);
@@ -103,18 +120,16 @@ const AdminDashboard: React.FC = () => {
       />
 
       <Stack direction="row" height="100vh">
-        {/* Sidebar */}
         <Box
           sx={{
             width: { xs: "100%", md: "20%" },
             height: "100vh",
+            borderRadius: 2,
             position: "fixed",
             top: 0,
             left: 0,
-            borderRadius: 2,
             p: 3,
             boxShadow: 3,
-            display: "flex",
             flexDirection: "column",
             gap: 2,
             overflow: "hidden",
@@ -191,7 +206,7 @@ const AdminDashboard: React.FC = () => {
         <Box
           sx={{
             width: { xs: "100%", md: "80%" },
-            ml: { md: "20%" },
+            ml: { md: "22%" },
             px: 3,
           }}
         >
@@ -234,19 +249,32 @@ const AdminDashboard: React.FC = () => {
                       </Typography>
                     </Box>
 
-                    <Stack direction="row" flexWrap="wrap" spacing={3}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                        gap: "15px",
+                        mb: "30px",
+                      }}
+                    >
                       {users.map((user) => (
-                        <Box key={user.id} sx={{ width: { xs: "100%", sm: "48%", md: "30%" } }}>
+                        <Box
+                          key={user.id}
+                          sx={{ width: { xs: "100%", sm: "48%", md: "30%" } }}
+                        >
                           <PrimaryCard
                             id={user.id}
                             first_name={user.first_name}
                             last_name={user.last_name}
                             role={user.role}
                             description={undefined}
+                            refreshData={refreshData}
+                            onUpdateUser={updateUserInState}
                           />
                         </Box>
                       ))}
-                    </Stack>
+                    </Box>
                   </>
                 )}
               </>
@@ -275,19 +303,31 @@ const AdminDashboard: React.FC = () => {
                     </Typography>
                   </Box>
 
-                  <Stack direction="row" flexWrap="wrap" spacing={3}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                      gap: "15px",
+                      mb: "30px",
+                    }}
+                  >
                     {stores.map((store) => (
-                      <Box key={store.id} sx={{ width: { xs: "100%", sm: "48%", md: "30%" } }}>
+                      <Box
+                        key={store.id}
+                        sx={{ width: { xs: "100%", sm: "48%", md: "30%" } }}
+                      >
                         <PrimaryCard
                           id={store.id}
                           last_name={undefined}
                           first_name={store.name}
                           description={store.description}
                           role={undefined}
+                          refreshData={refreshData}
                         />
                       </Box>
                     ))}
-                  </Stack>
+                  </Box>
                 </>
               )}
             </Stack>
